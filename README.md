@@ -4,6 +4,8 @@ A deep learning system that predicts supply chain fragility for crude oil market
 
 The model doesn't predict black swans. It identifies when conditions are fragile enough that any shock, predictable or not, will cause outsized damage. Think of it less as earthquake prediction and more as identifying which buildings haven't been retrofitted.
 
+<img width="3256" height="1062" alt="hero_timeline" src="https://github.com/user-attachments/assets/ad229364-50e0-4a25-9df0-d9d87efa47b9" />
+
 
 The chart above shows the model's risk score from 2005 to 2025. Shaded regions are known disruptions. The model was trained on data through 2020 and had never seen the Russia-Ukraine war or Houthi Red Sea attacks. It flagged both.
 
@@ -48,19 +50,22 @@ I started with XGBoost as a baseline and it performed well enough that adding an
 
 ### Feature Importance
 
-![Feature Importance](outputs/feature_importance.png)
+!<img width="2847" height="1063" alt="feature_importance" src="https://github.com/user-attachments/assets/945f163b-d65e-4c62-a72c-d741afb18674" />
+
 
 The signal layer split is balanced: Financial 29%, Market Structure 26%, Geopolitical 22%, Physical Supply 13%, Environmental 9%. The model is genuinely using all four layers, not just watching crude prices. The top feature (contango/backwardation flag) makes sense because futures curve shape is one of the most reliable single indicators of supply chain tightness.
 
 ### Signal Decomposition (SHAP)
 
-![Signal Decomposition](outputs/signal_decomposition.png)
+<img width="3256" height="1062" alt="signal_decomposition" src="https://github.com/user-attachments/assets/8ce441ca-115e-4c50-84c8-f7195e623dcc" />
+
 
 This breaks down what's driving the risk score at each point in time. Different disruptions have different drivers. The geopolitical layer spikes around Russia-Ukraine (2022). Environmental signals dominate during hurricane seasons. Financial and physical supply signals compound during broad market crises like COVID. The model adapts rather than applying one pattern to everything.
 
 ### Score Distribution
 
-![Score Distribution](outputs/score_distribution.png)
+<img width="3060" height="907" alt="score_distribution" src="https://github.com/user-attachments/assets/9769476b-1b28-436b-b4ea-9ea7c3735230" />
+
 
 Clean separation between calm and disruption periods on the training set. On val and test sets, the distributions overlap more in the 0.2-0.4 range. That's expected with only 6 training events. The model is conservative on unseen disruptions: it elevates the score in the right direction but doesn't push as high as it does for events it trained on. With real market data and more labeled events, calibration would improve.
 
@@ -141,29 +146,3 @@ Currently running on synthetic data. Set `USE_SYNTHETIC = False` and add your EI
 
 ---
 
-## How to Run
-
-```bash
-pip install numpy pandas xgboost shap matplotlib scikit-learn
-python run.py
-```
-
-All outputs saved to `outputs/`. Takes about 30 seconds.
-
----
-
-## Repo Structure
-
-```
-├── run.py                          # Everything: data, features, model, charts, scenarios
-├── outputs/
-│   ├── hero_timeline.png           # Risk score 2005-2025
-│   ├── feature_importance.png      # Top features + signal layer split
-│   ├── signal_decomposition.png    # SHAP-based layer contributions over time
-│   ├── score_distribution.png      # Calm vs disruption score separation
-│   ├── airline_scenario.png        # Fuel cost and hedging analysis
-│   └── shipping_scenario.png       # Rerouting cost comparison
-└── README.md
-```
-
-One file. No complex module structure. Every line is readable and explainable.
