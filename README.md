@@ -127,7 +127,7 @@ The consulting scenarios use reasonable industry assumptions (jet fuel crack spr
 | Freight rates | Frontline (FRO) as VLCC proxy | Daily | 2005-2025 |
 | Hurricane / weather | NOAA (seasonal indicators) | Daily | 2005-2025 |
 
-Currently running on synthetic data. Set `USE_SYNTHETIC = False` and add your EIA API key (free at [eia.gov/opendata](https://www.eia.gov/opendata/register.php)) to pull real data.
+Currently running on synthetic data.
 
 ---
 
