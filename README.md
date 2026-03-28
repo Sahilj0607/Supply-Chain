@@ -4,7 +4,6 @@ A deep learning system that predicts supply chain fragility for crude oil market
 
 The model doesn't predict black swans. It identifies when conditions are fragile enough that any shock, predictable or not, will cause outsized damage. Think of it less as earthquake prediction and more as identifying which buildings haven't been retrofitted.
 
-![Hero Timeline](outputs/hero_timeline.png)
 
 The chart above shows the model's risk score from 2005 to 2025. Shaded regions are known disruptions. The model was trained on data through 2020 and had never seen the Russia-Ukraine war or Houthi Red Sea attacks. It flagged both.
 
