@@ -1,13 +1,3 @@
-"""
-Crude Oil Supply Chain Risk Intelligence System
-================================================
-Predicts supply chain fragility (0-1) from four signal layers:
-physical supply, financial markets, geopolitical tension, and weather.
-
-XGBoost regression with SHAP-based interpretability.
-Run: python run.py
-"""
-
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -21,11 +11,6 @@ from datetime import timedelta
 import os, warnings
 warnings.filterwarnings("ignore")
 
-# To use real APIs instead of synthetic data, set USE_SYNTHETIC = False
-# and provide your EIA API key. Real data pulls from:
-#   - EIA API v2 (inventory, refinery util, imports)
-#   - Yahoo Finance (WTI futures CL=F, OVX volatility, Frontline FRO as freight proxy)
-#   - GDELT (geopolitical tension scores for 7 oil-producing regions)
 USE_SYNTHETIC = True
 
 DISRUPTIONS = [
@@ -59,9 +44,9 @@ def feature_layer(name):
     return "Other"
 
 
-# ═══════════════════════════════════════════════════════════════
+
 # 1. DATA GENERATION
-# ═══════════════════════════════════════════════════════════════
+
 
 def generate_data():
     """Generate synthetic crude oil market data calibrated to real statistical properties."""
@@ -85,7 +70,7 @@ def generate_data():
     crude_imports = np.clip(imports + shale_adj, 3, 11)
 
     # --- Layer 2: Financial signals ---
-    # Ornstein-Uhlenbeck process — mean-reverting, realistic crude price dynamics
+    # mean-reverting, realistic crude price dynamics
     crude_price = np.zeros(n)
     crude_price[0] = 60.0
     for i in range(1, n):
@@ -179,9 +164,8 @@ def generate_data():
     return df
 
 
-# ═══════════════════════════════════════════════════════════════
 # 2. FEATURE ENGINEERING (17 raw -> 47 engineered)
-# ═══════════════════════════════════════════════════════════════
+
 
 def engineer_features(df):
     f = pd.DataFrame(index=df.index)
@@ -250,9 +234,7 @@ def engineer_features(df):
     return f.dropna()
 
 
-# ═══════════════════════════════════════════════════════════════
 # 3. LABELS & SPLITS
-# ═══════════════════════════════════════════════════════════════
 
 def create_labels(df):
     """Risk score ramps up 21 days BEFORE each disruption — the model learns to predict fragility."""
@@ -280,9 +262,9 @@ def split_data(features, labels):
     return {s: (Xs.loc[m], y.loc[m]) for s, m in [("train", train_mask), ("val", val_mask), ("test", test_mask)]}
 
 
-# ═══════════════════════════════════════════════════════════════
+
 # 4. TRAIN & EVALUATE
-# ═══════════════════════════════════════════════════════════════
+
 
 def train_xgb(splits):
     X_tr, y_tr = splits["train"]
@@ -321,9 +303,9 @@ def evaluate(model, splits):
     return results, opt_thresh
 
 
-# ═══════════════════════════════════════════════════════════════
+
 # 5. SHAP ANALYSIS
-# ═══════════════════════════════════════════════════════════════
+
 
 def compute_shap(model, splits):
     """TreeExplainer gives exact Shapley values — no approximation needed."""
@@ -343,9 +325,9 @@ def compute_shap(model, splits):
     return all_shap, layer_shap
 
 
-# ═══════════════════════════════════════════════════════════════
+
 # 6. CHARTS
-# ═══════════════════════════════════════════════════════════════
+
 
 def setup_style():
     plt.rcParams.update({"figure.facecolor": "white", "axes.facecolor": "white", "axes.grid": True,
@@ -435,9 +417,8 @@ def chart_score_distribution(results, out):
     fig.tight_layout(); fig.savefig(f"{out}/score_distribution.png"); plt.close()
 
 
-# ═══════════════════════════════════════════════════════════════
-# 7. CONSULTING SCENARIOS (placeholder — fill in real numbers)
-# ═══════════════════════════════════════════════════════════════
+
+# 7. CONSULTING SCENARIOS 
 
 def print_scenarios():
     print("\n" + "=" * 65)
@@ -459,9 +440,6 @@ def print_scenarios():
 """)
 
 
-# ═══════════════════════════════════════════════════════════════
-# MAIN
-# ═══════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     out = "outputs"
@@ -493,4 +471,3 @@ if __name__ == "__main__":
     chart_score_distribution(results, out); print("  -> score_distribution.png")
 
     print_scenarios()
-    print("Done. All outputs in outputs/")
